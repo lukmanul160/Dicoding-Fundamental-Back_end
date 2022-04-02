@@ -1,6 +1,7 @@
 const { Pool } = require("pg");
 const { nanoid } = require("nanoid");
 const InvariantError = require("../../exceptions/InvariantError");
+const NotFoundError = require("../../exceptions/NotFoundError");
 const { mapDBToModel } = require("../../utils");
 
 class NotesService {
@@ -10,11 +11,11 @@ class NotesService {
 
   async addNote({ title, body, tags }) {
     const id = nanoid(16);
-    const created_at = new Date().toISOString();
-    const updated_at = created_at;
+    const createdAt = new Date().toISOString();
+    const updatedAt = createdAt;
 
     const query = {
-      text: "INSERT INTO notes VALUES($1,$2,$3,$4,$5,$6) RETURNING id",
+      text: "INSERT INTO notes VALUES($1, $2, $3, $4, $5, $6) RETURNING id",
       values: [id, title, body, tags, createdAt, updatedAt],
     };
 
@@ -27,17 +28,16 @@ class NotesService {
     return result.rows[0].id;
   }
 
-  async getNptes() {
+  async getNotes() {
     const result = await this._pool.query("SELECT * FROM notes");
     return result.rows.map(mapDBToModel);
   }
 
-  async getNodteById(id) {
+  async getNoteById(id) {
     const query = {
       text: "SELECT * FROM notes WHERE id = $1",
       values: [id],
     };
-
     const result = await this._pool.query(query);
 
     if (!result.rows.length) {
@@ -49,7 +49,6 @@ class NotesService {
 
   async editNoteById(id, { title, body, tags }) {
     const updatedAt = new Date().toISOString();
-
     const query = {
       text: "UPDATE notes SET title = $1, body = $2, tags = $3, updated_at = $4 WHERE id = $5 RETURNING id",
       values: [title, body, tags, updatedAt, id],
@@ -62,7 +61,7 @@ class NotesService {
     }
   }
 
-  async deleteById(id) {
+  async deleteNoteById(id) {
     const query = {
       text: "DELETE FROM notes WHERE id = $1 RETURNING id",
       values: [id],
