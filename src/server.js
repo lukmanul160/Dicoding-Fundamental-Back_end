@@ -38,10 +38,19 @@ const uploads = require("./api/uploads");
 const StorageService = require("./services/storage/StorageService");
 const UploadsValidator = require("./validator/uploads");
 
+// cache
+const CacheService = require("./services/redis/CacheService");
+
 const init = async () => {
-  // membuat instance
-  const collaborationsService = new CollaborationsService();
-  const notesService = new NotesService(collaborationsService);
+  // chache
+  const cacheService = new CacheService();
+
+  // // membuat instance sebelum chache
+  // const collaborationsService = new CollaborationsService();
+  // const notesService = new NotesService(collaborationsService);
+  // membuat instance sebelum chache
+  const collaborationsService = new CollaborationsService(cacheService);
+  const notesService = new NotesService(collaborationsService, cacheService);
   // code
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
