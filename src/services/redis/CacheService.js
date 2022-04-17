@@ -1,6 +1,6 @@
 const redis = require("redis");
 
-class ChacheService {
+class CacheService {
   constructor() {
     this._client = redis.createClient({
       socket: {
@@ -11,6 +11,7 @@ class ChacheService {
     this._client.on("error", (error) => {
       console.error(error);
     });
+
     this._client.connect();
   }
 
@@ -24,6 +25,7 @@ class ChacheService {
     const result = await this._client.get(key);
 
     if (result === null) throw new Error("Cache tidak ditemukan");
+
     return result;
   }
 
@@ -32,4 +34,4 @@ class ChacheService {
   }
 }
 
-module.exports = ChacheService;
+module.exports = CacheService;
